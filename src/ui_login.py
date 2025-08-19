@@ -2,11 +2,13 @@ import tkinter as tk
 from tkinter import messagebox
 from api_client import login
 from ui_session import SessionApp
+from logger import Logger 
 
 class LoginApp:
     def __init__(self, master: tk.Tk):
         self.master = master
         self.master.title("MiniAuth - Login")
+        self.logger = Logger()
         self._build_login_ui()
     
     def _build_login_ui(self):
@@ -35,6 +37,7 @@ class LoginApp:
         result = login(email, password)
 
         if "token" in result:
+            self.logger.log_event('login_success',f"User {email} logged in successfully.")
             messagebox.showinfo("Success", "You have logged in successfully!")
             self.master.withdraw()
             
@@ -49,6 +52,7 @@ class LoginApp:
             session_root.mainloop()
         else:
             error_msg = result.get("error", "Unknown login error.")
+            self.logger.log_event('login_failed', f"Login failed for user {email}: {error_msg}")
             messagebox.showerror("Login error", error_msg)
             
     def _clear_entries(self):

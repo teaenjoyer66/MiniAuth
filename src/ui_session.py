@@ -2,22 +2,27 @@ import tkinter as tk
 from tkinter import messagebox
 import subprocess
 import threading
-import time
 from session_manager import SessionManager
 from process_control import ProcessMonitor
 from typing import List, Dict
+from logger import Logger
 
 class SessionApp:
     def __init__(self, master: tk.Tk, session_data: Dict, login_window):
         self.master = master
         self.login_window = login_window
         self.master.title("MiniAuth - Active Session")
+        self.logger = Logger()
         
         self.session_manager = SessionManager(session_data["session_start"], session_data["session_end"])
         self.allowed_apps: List[str] = session_data["allowed_apps"]
         self.launched_processes: List[subprocess.Popen] = []
         self.timer_id = None
+        self.master.protocol("WM_DELETE_WINDOW", self._on_close)
 
+        self.logger.log_event("session_started", f"Session started with allowed apps: {self.allowed_apps}")
+        self.logger.log_event("session_start_time", f"Session start time: {session_data['session_start']}")  
+        
         self._build_session_ui()
         
         self.process_monitor = ProcessMonitor(self.launched_processes, self.session_manager)
@@ -50,6 +55,7 @@ class SessionApp:
         try:
             process = subprocess.Popen(executable)
             self.launched_processes.append(process)
+            self.logger.log_event("app_launched",f"app launched: {executable}")
         except FileNotFoundError:
             messagebox.showerror("Error", f"Executable not found: {executable}")
 
@@ -58,6 +64,7 @@ class SessionApp:
         
         if remaining_time <= 0:
             self._stop_timer()
+            self.logger.log_event("session_expired", "Session time has expired.")
             messagebox.showinfo("Session End", "Your time has expired! Applications will be closed.")
             self.master.destroy()
             return
@@ -72,7 +79,14 @@ class SessionApp:
             self.master.after_cancel(self.timer_id)
 
     def _on_logout(self):
+        self.logger.log_event("logout", "User logged out.")
+        self.logger.log_event("session_ended", "Session ended by user logout.") 
         self._stop_timer()
         self.master.destroy()
         self.login_window.master.deiconify()
         self.login_window._clear_entries()
+    
+    def _on_close(self):
+        self.logger.log_event("session_closed", "Session window closed by user.")
+        self._stop_timer()
+        self.master.destroy()
