@@ -11,8 +11,10 @@ MiniAuth is a proof-of-concept desktop application that manages user sessions an
 * **Access Control:** Restriction of application launches to an approved list from the server.
 * **Automated Shutdown:** Automatic termination of all launched applications upon session expiration.
 * **User Interface:** A straightforward and intuitive graphical interface.
+* **Event Logging & Reporting** All key events are logger to an SQLite database and can be exported to CSV via a command-line flag.
 
 ## Project Structure
+
 ```bash 
 ├── data/
 │   └── allowed_apps.json
@@ -20,6 +22,7 @@ MiniAuth is a proof-of-concept desktop application that manages user sessions an
 │   └── app.py
 ├── src/
 │   ├── api_client.py
+│   ├── logger.py
 │   ├── main.py
 │   ├── process_control.py
 │   ├── session_manager.py
@@ -64,8 +67,20 @@ python main.py
 Use the following credentials to log into the application:
 - Email: `test@example.com`
 - Password `1234`
+
+### 4. Export Logs to CSV (Optional)
+To generate a CSV report of all logged events, run:
+```bash
+python main.py --generate-csv-report
+```
+
+## Note
+
+- Log files and cache directories are ignored by Git (see `.gitignore`) to keep the repository clean and avoid committing sensitive or unnecessary files.
+
 ## TODO
-- [ ] Logging: Implement a logging system to save events to an SQLite database and provide an option to export to CSV.
+
+- [x] Logging: Implement a logging system to save events to an SQLite database and provide an option to export to CSV.
 
 - [ ] Offline Cache: Develop a module to store the last successful session details.
 
