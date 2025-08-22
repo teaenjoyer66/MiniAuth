@@ -1,7 +1,8 @@
-import tkinter as tk
-from tkinter import messagebox
+import threading
 import subprocess
 import threading
+import tkinter as tk
+from tkinter import messagebox
 from session_manager import SessionManager
 from process_control import ProcessMonitor
 from typing import List, Dict
@@ -26,7 +27,7 @@ class SessionApp:
         self._build_session_ui()
         
         self.process_monitor = ProcessMonitor(self.launched_processes, self.session_manager)
-        monitor_thread = threading.Thread(target=self.process_monitor.run, daemon=True)
+        monitor_thread = threading.Thread(target=self.process_monitor.run, daemon=False)
         monitor_thread.start()
 
     def _build_session_ui(self):
@@ -55,7 +56,7 @@ class SessionApp:
         try:
             process = subprocess.Popen(executable)
             self.launched_processes.append(process)
-            self.logger.log_event("app_launched",f"app launched: {executable}")
+            self.logger.log_event("app_launched", f"app launched: {executable}")
         except FileNotFoundError:
             messagebox.showerror("Error", f"Executable not found: {executable}")
 
@@ -81,6 +82,7 @@ class SessionApp:
     def _on_logout(self):
         self.logger.log_event("logout", "User logged out.")
         self.logger.log_event("session_ended", "Session ended by user logout.") 
+        self.session_manager.force_end_session()
         self._stop_timer()
         self.master.destroy()
         self.login_window.master.deiconify()
@@ -88,5 +90,11 @@ class SessionApp:
     
     def _on_close(self):
         self.logger.log_event("session_closed", "Session window closed by user.")
+        self.session_manager.force_end_session()
         self._stop_timer()
         self.master.destroy()
+        try: 
+            self.login_window.master.destroy()
+        except Exception:
+            pass
+        
