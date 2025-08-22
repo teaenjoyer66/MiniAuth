@@ -3,6 +3,7 @@ from tkinter import messagebox
 from api_client import login
 from ui_session import SessionApp
 from logger import Logger 
+from offline_cache import save_offline_cache
 
 class LoginApp:
     def __init__(self, master: tk.Tk):
@@ -46,6 +47,8 @@ class LoginApp:
                 "session_end": result["session_end"],
                 "allowed_apps": result["allowed_apps"],
             }
+            
+            save_offline_cache(result)
             
             session_root = tk.Tk()
             SessionApp(session_root, session_data, self)
