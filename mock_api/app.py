@@ -7,7 +7,7 @@ app = Flask(__name__)
 users = {
     "test@example.com": {
         "password": "1234",
-        "allowed_apps": ["notepad.exe", "calc.exe"],
+        "allowed_apps": ["notepad.exe", "mspaint.exe"],
         "session_minutes": 1
     }
 }
