@@ -17,6 +17,9 @@ MiniAuth is a proof-of-concept desktop application that manages user sessions an
 
 ```bash 
 ├── data/
+│   ├── offline_cache.json
+│   ├── logs.csv
+│   ├── logs.db
 │   └── allowed_apps.json
 ├── mock_api/
 │   └── app.py
@@ -24,6 +27,7 @@ MiniAuth is a proof-of-concept desktop application that manages user sessions an
 │   ├── api_client.py
 │   ├── logger.py
 │   ├── main.py
+│   ├── offline_cache.py
 │   ├── process_control.py
 │   ├── session_manager.py
 │   ├── ui_login.py
@@ -68,10 +72,14 @@ Use the following credentials to log into the application:
 - Email: `test@example.com`
 - Password `1234`
 
-### 4. Export Logs to CSV (Optional)
+### 4. Optional features
 To generate a CSV report of all logged events, run:
 ```bash
-python main.py --generate-csv-report
+python main.py --generate-csv-report 
+```
+To print out a local cache of last session, run:
+```bash
+python main.py --show-offline-cache
 ```
 
 ## Note
@@ -82,9 +90,9 @@ python main.py --generate-csv-report
 
 - [x] Logging: Implement a logging system to save events to an SQLite database and provide an option to export to CSV.
 
-- [ ] Offline Cache: Develop a module to store the last successful session details.
+- [x] Offline Cache: Develop a module to store the last successful session details.
 
-- [ ] Session Control: Ensure automatic application closure when the session expires and add a logout button.
+- [x] Session Control: Ensure automatic application closure when the session expires and add a logout button.
 
 - [ ] UI Security: Implement UI security features, such as preventing window minimization.
 
